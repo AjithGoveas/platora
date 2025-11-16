@@ -1,35 +1,49 @@
-'use client';
-
-import { restaurants } from '@/lib/dummy-data';
+import RestaurantCard from '@/components/RestaurantCard';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { fetchRestaurants } from '@/lib/api';
+import type { Restaurant } from '@/lib/types';
 import Link from 'next/link';
-import { Card } from '@/components/ui/card';
-import Image from 'next/image';
 
-export default function RestaurantsPage() {
-    return (
-        <div className="p-6 space-y-6">
-            <h1 className="text-2xl font-semibold">Browse Restaurants</h1>
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {restaurants.map((res) => (
-                    <Link key={res.id} href={`/customer/restaurant/${res.id}`}>
-                        <Card className="overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
-                            <div className="relative w-full h-40">
-                                <Image
-                                    src={res.image || '/placeholder.svg'}
-                                    alt={res.name}
-                                    layout="fill"
-                                    objectFit="cover"
-                                    className="transition-transform duration-300 hover:scale-105"
-                                />
-                            </div>
-                            <div className="p-4 space-y-1">
-                                <h2 className="text-lg font-bold">{res.name}</h2>
-                                <p className="text-sm text-gray-500 dark:text-gray-400">{res.cuisine}</p>
-                            </div>
-                        </Card>
-                    </Link>
-                ))}
-            </div>
-        </div>
-    );
+export default async function RestaurantsList() {
+	let restaurants: Restaurant[] = [];
+	let error: string | null = null;
+	try {
+		restaurants = await fetchRestaurants();
+	} catch (err: any) {
+		error = err?.message || 'Failed to load restaurants';
+	}
+
+	return (
+		<main className="min-h-screen mt-16 p-8">
+			<header className="mb-8">
+				<h1 className="text-3xl font-extrabold tracking-tight">Discover Restaurants</h1>
+				<p className="text-muted-foreground mt-2">Browse restaurants and view their menus.</p>
+			</header>
+
+			{error && <div className="mb-6 text-sm text-rose-600">{error}</div>}
+
+			<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+				{restaurants.length === 0 ? (
+					<Card className="p-6">
+						<CardHeader>
+							<CardTitle>No restaurants found</CardTitle>
+						</CardHeader>
+						<CardContent>
+							<p className="text-sm text-muted-foreground">We couldn't find any restaurants right now.</p>
+							<div className="mt-4">
+								<Link href="/" className="inline-block">
+									<Button>Back to home</Button>
+								</Link>
+							</div>
+						</CardContent>
+					</Card>
+				) : (
+					restaurants.map((r) => (
+						<RestaurantCard key={r.id} id={r.id} name={r.name} cuisine={r.address || 'Local'} />
+					))
+				)}
+			</div>
+		</main>
+	);
 }

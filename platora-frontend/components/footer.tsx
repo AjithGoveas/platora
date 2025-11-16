@@ -1,27 +1,33 @@
-import Link from "next/link";
+import { Github, Mail, Twitter } from 'lucide-react';
 
 export default function Footer() {
-    return (
-        <footer className="border-t">
-            <div className="container flex flex-col md:flex-row items-center justify-between gap-4 px-4 py-6 text-sm">
-                {/* Left side */}
-                <p className="text-muted-foreground">
-                    © {new Date().getFullYear()} <span className="font-bold">Platora</span>. All rights reserved.
-                </p>
+	return (
+		<footer className="border-t mt-12 bg-white/60 dark:bg-black/40 backdrop-blur-sm">
+			<div className="page-max py-6 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-slate-600">
+				<div className="flex items-center gap-3">
+					<div className="h-8 w-8 rounded-md bg-gradient-to-br from-rose-500 to-pink-500 flex items-center justify-center text-white font-bold shadow-sm">P
+					</div>
+					<div>
+						<div className="font-semibold">Platora</div>
+						<div className="text-xs text-muted-foreground">Order food from local restaurants</div>
+					</div>
+				</div>
 
-                {/* Right side */}
-                <nav className="flex gap-4 text-muted-foreground">
-                    <Link href="/about" className="hover:text-foreground">
-                        About
-                    </Link>
-                    <Link href="/contact" className="hover:text-foreground">
-                        Contact
-                    </Link>
-                    <Link href="/terms" className="hover:text-foreground">
-                        Terms
-                    </Link>
-                </nav>
-            </div>
-        </footer>
-    );
+				<div className="flex items-center gap-4">
+					<a href="#" className="flex items-center gap-2 hover:text-slate-900">
+						<Mail className="h-4 w-4"/>
+						<span>Contact</span>
+					</a>
+					<a href="#" className="flex items-center gap-2 hover:text-slate-900">
+						<Twitter className="h-4 w-4"/>
+						<span>Twitter</span>
+					</a>
+					<a href="#" className="flex items-center gap-2 hover:text-slate-900">
+						<Github className="h-4 w-4"/>
+						<span>Source</span>
+					</a>
+				</div>
+			</div>
+		</footer>
+	);
 }

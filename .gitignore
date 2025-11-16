@@ -30,6 +30,28 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
+# Repo workspace: ignore node_modules and runtime files for each subproject
+/platora-backend/node_modules/
+/platora-frontend/node_modules/
+
+# Backend build / runtime
+/platora-backend/build/
+/platora-backend/dist/
+/platora-backend/.env
+
+# Frontend build / runtime
+/platora-frontend/.next/
+/platora-frontend/out/
+/platora-frontend/.vercel
+/platora-frontend/.env
+
+# Environment files (sensitive)
+.env*
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
 # env files (can opt-in for committing if needed)
 .env*
 
@@ -42,3 +64,15 @@ next-env.d.ts
 
 # IDE settings
 **/.idea/
+.vscode/
+
+# Database files
+*.sqlite3
+*.sqlite
+
+# Logs
+logs/
+*.log
+
+# Misc OS files
+.DS_Store

@@ -1,36 +1,44 @@
-import {Metadata} from "next";
+import type {Metadata} from "next";
+import {Geist, Geist_Mono} from "next/font/google";
 import "./globals.css";
-import {Inter} from "next/font/google";
-import Navbar from "@/components/navbar";
-import Footer from "@/components/footer";
-import {Toaster} from "@/components/ui/sonner";
+import NavBar from "@/components/NavBar";
+import Footer from "@/components/Footer";
+import Toaster from "@/components/Toaster";
+import {ThemeProvider} from "next-themes";
 
-const inter = Inter({subsets: ["latin"], variable: "--font-inter"});
+const geistSans = Geist({
+    variable: "--font-geist-sans",
+    subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+    variable: "--font-geist-mono",
+    subsets: ["latin"],
+});
 
 export const metadata: Metadata = {
-    title: "Platora Delivery",
-    description: "Online delivery app built with Next.js, Tailwind, and shadcn/ui",
+    title: "Platora — Online Food Delivery",
+    description: "Platora — discover local restaurants and get food delivered fast",
 };
 
-export default function RootLayout({children}: { children: React.ReactNode }) {
+export default function RootLayout({
+                                       children,
+                                   }: Readonly<{
+    children: React.ReactNode;
+}>) {
     return (
         <html lang="en" suppressHydrationWarning>
-        <body className={`${inter.variable} antialiased`}>
-        <div className="flex min-h-screen flex-col">
-            <header>
-                <Navbar/>
-            </header>
-
-            <main className="flex-1">
+        <body
+            className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
+        >
+        <ThemeProvider attribute="class" defaultTheme="system">
+            <NavBar/>
+            <main className="page-max min-h-[70vh] px-4 py-8">
                 {children}
             </main>
-
-            <footer>
-                <Footer/>
-            </footer>
-
-            <Toaster position={"top-center"} richColors={true}/>
-        </div>
+            <Footer/>
+            <Toaster/>
+        </ThemeProvider>
         </body>
         </html>
     );
