@@ -1,0 +1,19 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "platora-backend/api/index.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "platora-backend/api/index.js"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/platora-frontend/$1"
+    }
+  ]
+}
