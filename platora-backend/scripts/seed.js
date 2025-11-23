@@ -128,7 +128,7 @@ async function seedMain(options = {wipe: false, dry: false}) {
         }
 
         const plainPassword = process.env.SEED_PASSWORD || 'Password123!';
-        const passwordHash = await bcrypt.hash(plainPassword, 10);
+        const passwordHash = await bcrypt.hash(plainPassword, 12);
 
         const users = {};
         users.admin = await upsertUserByEmail(client, {

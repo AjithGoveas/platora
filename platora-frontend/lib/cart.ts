@@ -1,4 +1,4 @@
-import type { CartItem } from './types'
+import type { CartItem, ClientOrderItem } from './types'
 
 export function loadCart(): CartItem[] {
   try {
@@ -41,3 +41,39 @@ export function mergeAddItem(cart: CartItem[], item: Partial<CartItem> & { menu_
   return next
 }
 
+export function clearCart() {
+  try {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('cart')
+      try { window.dispatchEvent(new Event('cartChange')) } catch {}
+    }
+  } catch (e) {
+    console.error('clearCart: failed to remove cart', e)
+  }
+}
+
+export function getCartSubtotal(cart?: CartItem[]) {
+  const c = cart ?? loadCart()
+  return c.reduce((s, it) => s + (Number(it.unit_price || 0) * (it.quantity || 0)), 0)
+}
+
+export function toClientOrderItems(cart?: CartItem[]): ClientOrderItem[] {
+  const c = cart ?? loadCart()
+  return c.map(i => ({
+    menu_item_id: i.menu_item_id,
+    name: i.name,
+    unit_price: Number(i.unit_price || 0),
+    quantity: i.quantity || 0,
+  }))
+}
+
+export function subscribeCart(cb: () => void) {
+  if (typeof window === 'undefined') return () => {}
+  const handler = () => cb()
+  window.addEventListener('cartChange', handler)
+  window.addEventListener('storage', handler)
+  return () => {
+    window.removeEventListener('cartChange', handler)
+    window.removeEventListener('storage', handler)
+  }
+}

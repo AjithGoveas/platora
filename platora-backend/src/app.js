@@ -8,6 +8,7 @@ import menuRoutes from "./routes/menu.js";
 import ordersRoutes from "./routes/orders.js";
 import paymentsRoutes from "./routes/payments.js";
 import deliveriesRoutes from "./routes/deliveries.js";
+import agentsRoutes from "./routes/agents.js";
 
 dotenv.config();
 const app = express();
@@ -22,6 +23,7 @@ app.use('/api/menu', menuRoutes);
 app.use('/api/orders', ordersRoutes);
 app.use('/api/deliveries', deliveriesRoutes);
 app.use('/api/payments', paymentsRoutes);
+app.use('/api', agentsRoutes);
 
 const port = process.env.PORT || 4000;
 

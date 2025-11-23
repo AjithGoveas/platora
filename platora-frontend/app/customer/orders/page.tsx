@@ -1,31 +1,58 @@
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import Link from 'next/link';
+'use client';
 
-export default function CustomerOrders() {
-	// Orders API is not available in the current backend; show a friendly placeholder
-	return (
-		<main className="min-h-screen mt-16 p-8">
-			<header className="mb-6">
-				<h1 className="text-3xl font-semibold">My Orders</h1>
-				<p className="text-muted-foreground mt-2">Track and manage your order history.</p>
-			</header>
+import OrdersList from '@/components/orders/OrdersList';
+import {API_URL, authFetch, getToken} from '@/lib/api';
+import {useEffect, useState} from 'react';
+import type {ClientOrder, ServerOrder} from '@/types/orders';
 
-			<Card>
-				<CardHeader>
-					<CardTitle>No orders yet</CardTitle>
-				</CardHeader>
-				<CardContent>
-					<p className="text-sm text-muted-foreground">
-						You don't have any orders yet. Browse restaurants to get started.
-					</p>
-					<div className="mt-4">
-						<Link href="/customer/restaurants">
-							<Button>Explore Restaurants</Button>
-						</Link>
-					</div>
-				</CardContent>
-			</Card>
-		</main>
-	);
+export default function CustomerOrdersPage() {
+  const [orders, setOrders] = useState<Array<ServerOrder | ClientOrder>>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+    const load = async () => {
+      setLoading(true);
+      try {
+        const token = getToken();
+        if (token) {
+          const res = await authFetch(`${API_URL}/api/orders/my`, {cache: 'no-store'});
+          if (res.ok) {
+            const data = await res.json().catch(() => ({}));
+            const arr = Array.isArray(data.orders) ? data.orders : (Array.isArray(data) ? data : []);
+            if (mounted) setOrders(arr);
+            setLoading(false);
+            return;
+          }
+        }
+      } catch (err) {
+        console.warn('Failed to fetch my orders', err);
+      }
+
+      // fallback to client orders
+      try {
+        const local = await (await import('@/lib/orders')).getOrders();
+        if (mounted) setOrders(local);
+      } catch (e) {
+        console.error('Failed to load local orders', e);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    };
+    load();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  return (
+    <main className="mt-24 px-4 md:px-8">
+      <header className="mb-6">
+        <h1 className="text-3xl font-bold">Your orders</h1>
+        <p className="text-sm text-muted-foreground mt-1">Review your past orders and view invoices.</p>
+      </header>
+
+      {loading ? <div>Loading…</div> : <OrdersList orders={orders} role={"customer"} />}
+    </main>
+  );
 }

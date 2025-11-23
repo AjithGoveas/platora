@@ -1,7 +1,7 @@
 // Server Action to add an item to a server-side cart; accepts id or full item payload and optional currentCart to merge
 'use server'
 
-import type { CartItem } from '@/lib/types'
+import type { CartItem } from '@/types/cart'
 
 type AddPayload =
   | string
@@ -10,9 +10,7 @@ type AddPayload =
 
 export async function addToCartAction(payload: AddPayload) {
   try {
-    // Server-side debug log so you can see the action was invoked in the Next.js server logs
-    // (check your frontend terminal running `npm run dev`)
-    console.debug('[addToCartAction] called with payload:', payload);
+    // action invoked on server (no debug logging)
     // Parse incoming payload
     let menuItemId: string | number
     let name: string | undefined
@@ -21,11 +19,12 @@ export async function addToCartAction(payload: AddPayload) {
     let incomingCart: CartItem[] | undefined
 
     if (typeof payload === 'object' && payload !== null && 'menu_item_id' in payload) {
-      menuItemId = (payload as any).menu_item_id
-      name = (payload as any).name
-      unit_price = (payload as any).unit_price
-      restaurant_id = (payload as any).restaurant_id
-      incomingCart = (payload as any).currentCart as CartItem[] | undefined
+      const p = payload as { menu_item_id: string | number; name?: string; unit_price?: number | string; restaurant_id?: string | number; currentCart?: CartItem[] }
+      menuItemId = p.menu_item_id
+      name = p.name
+      unit_price = p.unit_price
+      restaurant_id = p.restaurant_id
+      incomingCart = p.currentCart
     } else {
       menuItemId = payload as string | number
     }

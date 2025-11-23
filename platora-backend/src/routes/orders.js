@@ -12,5 +12,7 @@ router.get('/my', authenticate, authorize(['customer']), controller.listMyOrders
 router.get('/restaurant', authenticate, authorize(['restaurant']), controller.listRestaurantOrders);
 // Restaurant updates order status (accept/reject/update status)
 router.put('/:id/status', authenticate, authorize(['restaurant']), controller.updateOrderStatus);
+// Customer views order details (also accessible to restaurant/delivery as appropriate)
+router.get('/:id', authenticate, controller.getOrderDetails);
 
 export default router;

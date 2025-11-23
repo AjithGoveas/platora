@@ -25,7 +25,7 @@ export default async function RestaurantDashboard() {
 					<CardContent>
 						<p className="text-gray-600">View and manage all incoming orders.</p>
 						{/* Link: /restaurant/orders */}
-						<Link href="/restaurant">
+						<Link href="/restaurant/orders">
 							<Button className="mt-4 w-full">Manage Orders</Button>
 						</Link>
 					</CardContent>

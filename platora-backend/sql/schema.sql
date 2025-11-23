@@ -68,6 +68,17 @@ CREATE TABLE IF NOT EXISTS payments (
   invoice_text TEXT
 );
 
+-- New: invoices table to store structured invoice records (separate from payments)
+CREATE TABLE IF NOT EXISTS invoices (
+  id SERIAL PRIMARY KEY,
+  order_id INT REFERENCES orders(id) ON DELETE CASCADE,
+  amount NUMERIC(10,2) NOT NULL,
+  currency VARCHAR(10) DEFAULT 'INR',
+  generated_at TIMESTAMP DEFAULT now(),
+  invoice_text TEXT,
+  generated_by VARCHAR(100)
+);
+
 -- View: aggregated order history for quick reads
 CREATE OR REPLACE VIEW view_order_history AS
 SELECT
@@ -100,9 +111,22 @@ ORDER BY day DESC;
 -- Stored procedure: auto-insert delivery record upon order confirmation
 CREATE OR REPLACE FUNCTION fn_create_delivery_for_order(p_order_id INT)
 RETURNS VOID LANGUAGE plpgsql AS $$
+DECLARE
+  selected_agent INT;
 BEGIN
-  INSERT INTO deliveries(order_id, status, assigned_at)
-  VALUES (p_order_id, 'Assigned', now());
+  -- Choose the delivery agent with the fewest active (non-Delivered) deliveries.
+  -- Tie-breaker: lowest user id for determinism.
+  SELECT u.id INTO selected_agent
+  FROM users u
+  LEFT JOIN deliveries d ON d.delivery_agent_id = u.id AND d.status <> 'Delivered'
+  WHERE u.role = 'delivery'
+  GROUP BY u.id
+  ORDER BY COUNT(d.id) ASC, u.id ASC
+  LIMIT 1;
+
+  -- Insert delivery; selected_agent may be NULL if no delivery agents exist.
+  INSERT INTO deliveries(order_id, delivery_agent_id, status, assigned_at)
+  VALUES (p_order_id, selected_agent, 'Assigned', now());
 END;
 $$;
 
@@ -112,6 +136,7 @@ RETURNS VOID LANGUAGE plpgsql AS $$
 DECLARE
   total NUMERIC(10,2);
   invoice TEXT;
+  inv_id INT;
 BEGIN
   SELECT COALESCE(SUM(oi.quantity * oi.unit_price),0) INTO total
   FROM order_items oi
@@ -119,10 +144,16 @@ BEGIN
 
   invoice := format('Invoice for order %s:\nTotal: %s\nGenerated at: %s', p_order_id, total, now());
 
+  -- Insert into payments for payment history
   INSERT INTO payments(order_id, amount, mode, paid_at, invoice_text)
   VALUES (p_order_id, total, p_mode, now(), invoice);
 
-  -- update orders total_amount if not set
+  -- insert a simplified invoice record as well
+  INSERT INTO invoices(order_id, amount, currency, generated_at, invoice_text, generated_by)
+  VALUES (p_order_id, total, 'INR', now(), invoice, p_mode)
+  RETURNING id INTO inv_id;
+
+  -- update orders total_amount
   UPDATE orders SET total_amount = total WHERE id = p_order_id;
 END;
 $$;

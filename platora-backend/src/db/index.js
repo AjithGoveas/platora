@@ -7,7 +7,7 @@ const {options} = pkg;
 dotenv.config();
 
 export const pool = new Pool({
-    connectionString: process.env.DATABASE_URL || "postgres://postgres:root@localhost:5432/platora2",
+    connectionString: process.env.DATABASE_URL || "postgres://postgres:root@localhost:5432/platora_db",
     // optionally use SSL config in production
 });
 

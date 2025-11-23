@@ -27,7 +27,7 @@ export async function signup(req, res) {
 		const exists = await query('SELECT id FROM users WHERE email = $1', [email]);
 		if (exists.rows.length > 0) return res.status(400).json({ error: 'Email already registered' });
 
-		const hash = await bcrypt.hash(password, 10);
+		const hash = await bcrypt.hash(password, 12);
 		const result = await query(
 			'INSERT INTO users (email, password_hash, name, phone, role) VALUES ($1,$2,$3,$4,$5) RETURNING id, email, name, role',
 			[email, hash, name, phone || null, role]

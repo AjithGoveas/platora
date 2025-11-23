@@ -23,3 +23,28 @@ export function formatPrice(p: string | number | null | undefined) {
     if (Number.isNaN(n)) return '—';
     return n % 1 === 0 ? `₹${n}` : `₹${n.toFixed(2)}`;
 }
+
+// small pick helper (similar to others) to read unknown shapes
+export function asRecord(v: unknown): Record<string, unknown> {
+    return (typeof v === 'object' && v !== null) ? (v as Record<string, unknown>) : {}
+}
+
+export function pick<T = unknown>(v: unknown, keys: string[], fallback?: T): T | undefined {
+    const r = asRecord(v)
+    for (const k of keys) {
+        if (k in r) {
+            const val = r[k]
+            if (val !== undefined && val !== null) return val as unknown as T
+        }
+    }
+    return fallback
+}
+
+export function formatDate(v?: string | null) {
+    if (!v) return '—'
+    try {
+        return new Date(String(v)).toLocaleString()
+    } catch {
+        return String(v)
+    }
+}
