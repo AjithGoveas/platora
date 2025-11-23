@@ -1,8 +1,8 @@
 import type {Metadata} from "next";
 import {Geist, Geist_Mono} from "next/font/google";
 import "./globals.css";
-import Na from "@/components/Na";
-import Fo from "@/components/Fo";
+import NavBar from "@/components/NavBar";
+import Footer from "@/components/Footer";
 import Toaster from "@/components/Toaster";
 import {ThemeProvider} from "next-themes";
 
@@ -32,11 +32,11 @@ export default function RootLayout({
             className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
         >
         <ThemeProvider attribute="class" defaultTheme="system">
-            <Na/>
+            <NavBar/>
             <main className="page-max min-h-[70vh] px-4 py-8">
                 {children}
             </main>
-            <Fo/>
+            <Footer/>
             <Toaster/>
         </ThemeProvider>
         </body>
