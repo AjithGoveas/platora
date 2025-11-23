@@ -27,4 +27,11 @@ app.use('/api', agentsRoutes);
 
 const port = process.env.PORT || 4000;
 
+app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
+    // Initialize DB schema on server start
+    initDbSchema().catch(err => {
+        console.error('Error initializing database schema:', err);
+    });
+})
 export default app;
