@@ -15,7 +15,7 @@ type User = {
 	avatarUrl?: string;
 };
 
-export default function NavBar() {
+export default function Na() {
 	const [open, setOpen] = useState(false);
 	const { theme, setTheme, resolvedTheme } = useTheme();
 	const [user, setUser] = useState<User | null>(null);
