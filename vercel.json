@@ -4,16 +4,20 @@
     {
       "src": "platora-backend/api/index.js",
       "use": "@vercel/node"
-    }
-  ],
-  "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "platora-backend/api/index.js"
     },
     {
-      "source": "/(.*)",
-      "destination": "/platora-frontend/$1"
+      "src": "platora-frontend/package.json",
+      "use": "@vercel/next"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "platora-backend/api/index.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/platora-frontend/$1"
     }
   ]
 }
