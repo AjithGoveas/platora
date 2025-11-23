@@ -17,13 +17,13 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
 app.get('/', (req, res) => res.json({ok: true, msg: 'Online Food Delivery API'}));
-app.use('/api/auth', authRoutes);
-app.use('/api/restaurants', restaurantRoutes);
-app.use('/api/menu', menuRoutes);
-app.use('/api/orders', ordersRoutes);
-app.use('/api/deliveries', deliveriesRoutes);
-app.use('/api/payments', paymentsRoutes);
-app.use('/api', agentsRoutes);
+app.use('api/auth', authRoutes);
+app.use('api/restaurants', restaurantRoutes);
+app.use('api/menu', menuRoutes);
+app.use('api/orders', ordersRoutes);
+app.use('api/deliveries', deliveriesRoutes);
+app.use('api/payments', paymentsRoutes);
+app.use('api', agentsRoutes);
 
 const port = process.env.PORT || 4000;
 
